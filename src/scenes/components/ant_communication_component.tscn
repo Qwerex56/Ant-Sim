@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://blxk7i7y4bwk0"]
+
+[ext_resource type="Script" path="res://src/scenes/components/AntCommunicationComponent.cs" id="1_li5sd"]
+
+[node name="AntCommunicationComponent" type="Node"]
+script = ExtResource("1_li5sd")
