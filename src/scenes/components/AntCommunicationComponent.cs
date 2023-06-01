@@ -3,23 +3,19 @@ using System;
 using System.Collections.Generic;
 
 public partial class AntCommunicationComponent : Node {
-  private HashSet<Vector2I> foodPlaces;
+  private HashSet<Vector2I> foodPlaces = new();
   public HashSet<Vector2I> FoodPlaces {get { return foodPlaces; } }
 
-  private HashSet<Vector2> antPositions;
-  public HashSet<Vector2> AntPositions {get { return antPositions; } }
+  private HashSet<Vector2I> antPositions = new();
+  public HashSet<Vector2I> AntPositions {get { return antPositions; } }
 
-  private HashSet<DeathMesasge> deathMassages;
+  private HashSet<DeathMesasge> deathMassages = new();
   public HashSet<DeathMesasge> DeathMassages {get { return deathMassages; } }
 
   public enum CommuniqueTypeEnum {
     Food,
     Position,
     Death
-  }
-
-  public override void _Ready() {
-    PushMassage(CommuniqueTypeEnum.Food, "Hello", "Darkness", 123, new Vector2I(1, 1));
   }
 
   public void PushMassage(CommuniqueTypeEnum type, params object[] args) {
@@ -32,15 +28,15 @@ public partial class AntCommunicationComponent : Node {
 
     switch (type) {
       case CommuniqueTypeEnum.Food:
-        PushFood(positions, ant);
+        PushFood(positions);
       break;
       
       case CommuniqueTypeEnum.Position:
-        PushPosition(position, ant);
+        PushPosition(position);
       break;
       
       case CommuniqueTypeEnum.Death:
-        PushDeath(position, ant, round);
+        PushDeath(position, round);
       break;
       
       default:
@@ -48,24 +44,41 @@ public partial class AntCommunicationComponent : Node {
     }
   }
 
-  public void PopMassage() {
+  public void PopMassage(CommuniqueTypeEnum type, Vector2I position) {
+    switch (type) {
+      case CommuniqueTypeEnum.Food:
+        foodPlaces.Remove(position);
+      break;
+      
+      case CommuniqueTypeEnum.Position:
+        antPositions.Remove(position);
+      break;
+
+      case CommuniqueTypeEnum.Death:
+
+      break;
+    }
   }
 
-  private void PushFood(Vector2I[] where, Node2D who) {
-
+  public void PushFood(Vector2I[] where) {
+    foodPlaces.UnionWith(where);
   }
 
-  private void PushPosition(Vector2 position, Node2D who) {
-
+  public void PushPosition(Vector2I where) {
+    antPositions.Add(where);
   }
 
-  private void PushDeath(Vector2I where, Node2D who, int when) {
-
+  public void PushDeath(Vector2I where, int when) {
+    deathMassages.Add(new(where, when));
   }
 
   public struct DeathMesasge {
+    public DeathMesasge(Vector2I position, int when) {
+      place = position;
+      round = when;
+    }
+
     Vector2I place;
-    Node2D ant;
     int round;
   }
 }
