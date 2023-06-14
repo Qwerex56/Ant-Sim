@@ -6,18 +6,12 @@ public partial class grid : Node2D {
   [Export]
   public PackedScene antScene;
 
-  [Export]
-  private int antCount = 5;
-
-  [Export]
-  private int foodCount = 3;
-
   private Environment env;
 
   public override void _Ready() {
     var root = GetTree().Root;
     env = root.GetNode<Environment>("GlobalEnvironment");
-    env.InitializeGame(antCount, foodCount);
+    env.InitializeGame();
     foreach (var item in env.AntPositons) {
       var ant = antScene.Instantiate<Ant>();
       ant.gridPosition = item;
@@ -42,7 +36,7 @@ public partial class grid : Node2D {
   public override void _Draw()
   {
     foreach (var item in env.FoodPositions) {
-      DrawCircle(item * env.cellSize, 7f, Colors.DarkRed);
+      DrawCircle(item * env.CELL_SIZE + Vector2I.One * env.CELL_SIZE / 2, 7f, Colors.DarkRed);
     }
   }
 }

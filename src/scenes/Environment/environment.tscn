@@ -1,7 +1,61 @@
-[gd_scene load_steps=2 format=3 uid="uid://bg4tkk0egrk4n"]
+[gd_scene load_steps=3 format=3 uid="uid://bg4tkk0egrk4n"]
 
 [ext_resource type="Script" path="res://src/scenes/Environment/Environment.cs" id="1_doegm"]
+[ext_resource type="PackedScene" uid="uid://bmqu4foydjxdj" path="res://src/scenes/ui/labeled_spinbox.tscn" id="2_4ielu"]
 
-[node name="Environment" type="Node"]
+[node name="Environment" type="Node" node_paths=PackedStringArray("settingsTab")]
 editor_description = "Holds information about all food positions, ants positions and takes care for grid initialization"
 script = ExtResource("1_doegm")
+settingsTab = NodePath("EnvSettings/Settings")
+
+[node name="EnvSettings" type="CanvasLayer" parent="."]
+
+[node name="Settings" type="ScrollContainer" parent="EnvSettings"]
+visible = false
+offset_left = 76.0
+offset_top = 20.0
+offset_right = 225.0
+offset_bottom = 216.0
+horizontal_scroll_mode = 3
+metadata/_edit_group_ = true
+
+[node name="SettingsScroll" type="VBoxContainer" parent="EnvSettings/Settings"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="InitialFoodSetting" parent="EnvSettings/Settings/SettingsScroll" instance=ExtResource("2_4ielu")]
+layout_mode = 2
+settingName = "Initial Food"
+Value = 5
+
+[node name="InitialAntsSetting" parent="EnvSettings/Settings/SettingsScroll" instance=ExtResource("2_4ielu")]
+layout_mode = 2
+settingName = "Initial Ants"
+Value = 3
+
+[node name="SaturationMaxSetting" parent="EnvSettings/Settings/SettingsScroll" instance=ExtResource("2_4ielu")]
+layout_mode = 2
+settingName = "Max Saturation"
+Value = 15
+
+[node name="SaturationLostSetting" parent="EnvSettings/Settings/SettingsScroll" instance=ExtResource("2_4ielu")]
+layout_mode = 2
+settingName = "Saturatio lost rate"
+Value = 1
+
+[node name="SaturationRegainSetting" parent="EnvSettings/Settings/SettingsScroll" instance=ExtResource("2_4ielu")]
+layout_mode = 2
+settingName = "Saturation gain rate"
+Value = 2
+
+[node name="FoodSpawnRateSetting" parent="EnvSettings/Settings/SettingsScroll" instance=ExtResource("2_4ielu")]
+layout_mode = 2
+settingName = "Food spawn rate"
+Value = 3
+
+[connection signal="valueChanged" from="EnvSettings/Settings/SettingsScroll/InitialFoodSetting" to="." method="OnInitialFoodValueChanged"]
+[connection signal="valueChanged" from="EnvSettings/Settings/SettingsScroll/InitialAntsSetting" to="." method="OnInitialAntsValueChanged"]
+[connection signal="valueChanged" from="EnvSettings/Settings/SettingsScroll/SaturationMaxSetting" to="." method="OnSaturationMaxValueChanged"]
+[connection signal="valueChanged" from="EnvSettings/Settings/SettingsScroll/SaturationLostSetting" to="." method="OnSaturationLostValueChanged"]
+[connection signal="valueChanged" from="EnvSettings/Settings/SettingsScroll/SaturationRegainSetting" to="." method="OnSaturationRegainValueChanged"]
+[connection signal="valueChanged" from="EnvSettings/Settings/SettingsScroll/FoodSpawnRateSetting" to="." method="OnFoodRateValueChanged"]

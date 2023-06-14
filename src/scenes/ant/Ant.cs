@@ -11,20 +11,18 @@ public partial class Ant : Sprite2D {
   
   private Queue<Vector2I> stepHistory = new();
 
-
-  private int maxStauration = 15;
   public int saturation;
 
   public override void _Ready() {
     var root = GetTree().Root;
     env = root.GetNode<Environment>("GlobalEnvironment");
 
-    GlobalPosition = gridPosition * env.cellSize;
-    saturation = maxStauration;
+    GlobalPosition = gridPosition * env.CELL_SIZE;
+    saturation = env.saturationMax;
   }
 
   public void Move() {
-    saturation -= 1;
+    saturation -= env.saturationLost;
     antCommunication.PopMassage(AntCommunicationComponent.CommuniqueTypeEnum.Position, gridPosition);
     env.AntPositons.Remove(gridPosition);
 
@@ -50,20 +48,27 @@ public partial class Ant : Sprite2D {
     var foodIntersection = ListIntersection(neighborCells, env.FoodPositions);
     var antIntersection = ListIntersection(neighborCells, env.AntPositons);
 
-    if (foodIntersection.Count <= 0) {
+    if (foodIntersection.Count <= 0 || saturation >= env.saturationMax / 10 * 9) {
       // Remove occupied cells from neighborCells list
       foreach (var item in antIntersection) {
         neighborCells.Remove(item);
       }
+      foreach (var item in foodIntersection) {
+        neighborCells.Remove(item);
+      }
       // Go to random legal position
-      gridPosition = neighborCells[(int) (new RandomNumberGenerator().Randi() % neighborCells.Count)];
+      if (neighborCells.Count <= 0) {
+        gridPosition = gridPosition;
+      } else {
+        gridPosition = neighborCells[(int) (new RandomNumberGenerator().Randi() % neighborCells.Count)];
+      }
     } else {
       //go to random food
       gridPosition = foodIntersection[(int) (new RandomNumberGenerator().Randi() % foodIntersection.Count)];
       antCommunication.PopMassage(AntCommunicationComponent.CommuniqueTypeEnum.Food, gridPosition);
       env.FoodPositions.Remove(gridPosition);
 
-      saturation = Mathf.Clamp(saturation + 2, 0, maxStauration);
+      saturation = Mathf.Clamp(saturation + env.saturationRegain, 0, env.saturationMax);
     }
 
     // Update neighbors list
@@ -77,8 +82,7 @@ public partial class Ant : Sprite2D {
     antCommunication.PushMassage(AntCommunicationComponent.CommuniqueTypeEnum.Position, new() { gridPosition });
     env.AntPositons.Add(gridPosition);
 
-    GlobalPosition = gridPosition * env.cellSize;
-    // GD.Print(saturation);
+    GlobalPosition = gridPosition * env.CELL_SIZE + Vector2I.One * (env.CELL_SIZE / 2);
   }
 
   private List<Vector2I> GetAdjecentCells() {
@@ -95,9 +99,10 @@ public partial class Ant : Sprite2D {
     adjecentCells.Remove(gridPosition);
 
     adjecentCells.RemoveAll((vec) => { 
-      var isNegative = (vec.X < 0 || vec.Y < 0);
-      var isOutOfBounds = (vec.X >= env.GridSize.X || vec.Y >= env.GridSize.Y);
-      return isOutOfBounds || isNegative;
+      return ( 
+        vec.X < 0 || vec.Y < 0 ||
+        vec.X >= env.GridSize.X || vec.Y >= env.GridSize.Y
+      );
     });
 
     return adjecentCells;

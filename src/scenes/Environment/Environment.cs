@@ -15,17 +15,37 @@ public partial class Environment : Node {
   private Grid grid = new();
   public Vector2I GridSize { get { return grid.GetGridSize(); } }
 
-  public readonly int cellSize = 16;
+  public readonly int CELL_SIZE = 16;
+
+  // Modifiedable fields in editor
+  [Export] private ScrollContainer settingsTab;
+  [Export] private int foodSpawnRate = 3;
+
+  [Export] private int initialFood = 5;
+  [Export] private int initialAnts = 3;
+
+  [Export] public int saturationMax = 15;
+  [Export] public int saturationRegain = 1;
+  [Export] public int saturationLost = 1;
 
   public override void _Ready() {
-    grid.width = GetTree().Root.GetWindow().Size.X / cellSize;
-    grid.height = GetTree().Root.GetWindow().Size.Y / cellSize;
+    grid.width = GetTree().Root.GetWindow().Size.X / CELL_SIZE;
+    grid.height = GetTree().Root.GetWindow().Size.Y / CELL_SIZE;
   }
 
-  public void InitializeGame(int ants, int foods) {
+  public override void _Input(InputEvent @event) {
+    if (@event.IsActionPressed("OpenSettingMenu")) {
+      OpenSettings();
+    }
+  }
+
+  public void InitializeGame() {    
+    var ants = initialAnts;
+    var foods = initialFood;
+
     while (ants + foods >= grid.GetGridField()) {
-      ants /= 2;
-      foods /= 2;
+      ants -= 1;
+      foods -= 1;
     }
 
     for (int i = 0; i < ants;) {
@@ -48,7 +68,14 @@ public partial class Environment : Node {
   }
 
   public void SpawnFood() {
-    for (int i = 0; i < 1;) {
+    var foodToSpawn = this.foodSpawnRate;
+
+    while (foodPositions.Count + antPositons.Count + foodToSpawn >= grid.GetGridField()) {
+      foodToSpawn -= 1;
+    }
+
+
+    for (int i = 0; i < foodToSpawn;) {
       var x = (int) (new RandomNumberGenerator().Randi() % grid.width);
       var y = (int) (new RandomNumberGenerator().Randi() % grid.height);
 
@@ -69,4 +96,17 @@ public partial class Environment : Node {
       return new(width, height);
     }
   }
+
+  private void OpenSettings() {
+    if (settingsTab == null) return;
+
+    settingsTab.Visible = !settingsTab.Visible;
+  }
+
+  private void OnInitialFoodValueChanged(int value) { initialFood = value; }
+  private void OnInitialAntsValueChanged(int value) { initialAnts = value; }
+  private void OnSaturationMaxValueChanged(int value) { saturationMax = value; }
+  private void OnSaturationLostValueChanged(int value) { saturationLost = value; }
+  private void OnSaturationRegainValueChanged(int value) { saturationRegain = value; }
+  private void OnFoodRateValueChanged(int value) { foodSpawnRate = value; }
 }

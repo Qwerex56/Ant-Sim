@@ -1,0 +1,29 @@
+[gd_scene load_steps=3 format=3 uid="uid://bmqu4foydjxdj"]
+
+[ext_resource type="Script" path="res://src/scenes/ui/LabeledSpinbox.cs" id="1_q8wmj"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_ut1b1"]
+line_spacing = 0.0
+font_size = 14
+
+[node name="LabeledSpinbox" type="VBoxContainer" node_paths=PackedStringArray("setName", "setVal")]
+offset_left = 47.0
+offset_top = 39.0
+offset_right = 215.0
+offset_bottom = 94.0
+script = ExtResource("1_q8wmj")
+setName = NodePath("SettingName")
+setVal = NodePath("SettingValue")
+metadata/_edit_group_ = true
+
+[node name="SettingName" type="Label" parent="."]
+layout_mode = 2
+text = "Setting"
+label_settings = SubResource("LabelSettings_ut1b1")
+
+[node name="SettingValue" type="SpinBox" parent="."]
+layout_mode = 2
+mouse_force_pass_scroll_events = false
+rounded = true
+
+[connection signal="value_changed" from="SettingValue" to="." method="OnSettingValueChanged"]
