@@ -1,11 +1,10 @@
 [gd_scene load_steps=3 format=3 uid="uid://dkrosqvw73bsm"]
 
 [ext_resource type="PackedScene" uid="uid://bl1cmsithndgf" path="res://src/scenes/grid/grid.tscn" id="1_rx01g"]
-[ext_resource type="PackedScene" uid="uid://bb4l0quomhjx7" path="res://src/scenes/ant/ant.tscn" id="2_maj3m"]
+[ext_resource type="PackedScene" uid="uid://blsgmcf8dm16k" path="res://src/scenes/ant/ant.tscn" id="2_maj3m"]
 
 [node name="Main" type="Node2D"]
 
 [node name="Grid" parent="." instance=ExtResource("1_rx01g")]
 antScene = ExtResource("2_maj3m")
-antCount = 1
-foodCount = 1
+antCount = 14

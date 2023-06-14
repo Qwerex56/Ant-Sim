@@ -2,15 +2,15 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public partial class AntCommunicationComponent : Node {
-  private HashSet<Vector2I> foodPlaces = new();
-  public HashSet<Vector2I> FoodPlaces {get { return foodPlaces; } }
+public partial class AntCommunicationComponent {
+  private HashSet<Vector2I> foodPositions = new();
+  public HashSet<Vector2I> FoodPositions {get { return foodPositions; } }
 
   private HashSet<Vector2I> antPositions = new();
   public HashSet<Vector2I> AntPositions {get { return antPositions; } }
 
-  private HashSet<DeathMesasge> deathMassages = new();
-  public HashSet<DeathMesasge> DeathMassages {get { return deathMassages; } }
+  private HashSet<Vector2I> deathPositions = new();
+  public HashSet<Vector2I> DeathPositions {get { return deathPositions; } }
 
   public enum CommuniqueTypeEnum {
     Food,
@@ -18,67 +18,35 @@ public partial class AntCommunicationComponent : Node {
     Death
   }
 
-  public void PushMassage(CommuniqueTypeEnum type, params object[] args) {
-    var argsList = new List<object>(args);
-
-    Vector2I[] positions = (Vector2I[])argsList.Find((obj) => obj.GetType() == typeof(Vector2I[]));
-    Vector2I position = (Vector2I)argsList.Find((obj) => obj.GetType() == typeof(Vector2I));
-    Node2D ant = (Node2D)argsList.Find((obj) => obj.GetType() == typeof(Node2D));
-    int round = (int)argsList.Find((obj) => obj.GetType() == typeof(int));
-
+  public void PushMassage(CommuniqueTypeEnum type, List<Vector2I> args) {
     switch (type) {
       case CommuniqueTypeEnum.Food:
-        PushFood(positions);
-      break;
+        foodPositions.UnionWith(args);
+        break;
       
       case CommuniqueTypeEnum.Position:
-        PushPosition(position);
-      break;
+        antPositions.UnionWith(args);
+        break;
       
       case CommuniqueTypeEnum.Death:
-        PushDeath(position, round);
-      break;
-      
-      default:
-      break; 
+        deathPositions.UnionWith(args);
+        break; 
     }
   }
 
   public void PopMassage(CommuniqueTypeEnum type, Vector2I position) {
     switch (type) {
       case CommuniqueTypeEnum.Food:
-        foodPlaces.Remove(position);
-      break;
+        foodPositions.Remove(position);
+        break;
       
       case CommuniqueTypeEnum.Position:
         antPositions.Remove(position);
-      break;
+        break;
 
       case CommuniqueTypeEnum.Death:
-
-      break;
+        deathPositions.Remove(position);
+        break;
     }
-  }
-
-  public void PushFood(Vector2I[] where) {
-    foodPlaces.UnionWith(where);
-  }
-
-  public void PushPosition(Vector2I where) {
-    antPositions.Add(where);
-  }
-
-  public void PushDeath(Vector2I where, int when) {
-    deathMassages.Add(new(where, when));
-  }
-
-  public struct DeathMesasge {
-    public DeathMesasge(Vector2I position, int when) {
-      place = position;
-      round = when;
-    }
-
-    Vector2I place;
-    int round;
   }
 }

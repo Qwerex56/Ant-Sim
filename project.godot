@@ -16,7 +16,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-AntCommunicationComponent="*res://src/scenes/components/ant_communication_component.tscn"
+GlobalEnvironment="*res://src/scenes/Environment/environment.tscn"
 
 [display]
 

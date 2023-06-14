@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 
 public partial class grid : Node2D {
-  readonly int cellSize = 16;
-
   [Export]
   public PackedScene antScene;
 
@@ -14,71 +12,37 @@ public partial class grid : Node2D {
   [Export]
   private int foodCount = 3;
 
-  private Vector2I gridSize;
-
-  private AntCommunicationComponent antCommunication;
-
-  private HashSet<Vector2I> foodPositions = new HashSet<Vector2I>();
+  private Environment env;
 
   public override void _Ready() {
     var root = GetTree().Root;
-    antCommunication = root.GetNode<AntCommunicationComponent>("AntCommunicationComponent");
-
-    gridSize = root.GetWindow().Size / 16;
-    var gridField = gridSize.X * gridSize.Y;
-
-    if (antCount + foodCount >= gridField) {
-      antCount %= gridField;
-      foodCount = gridField - antCount - 1;
-    }
-
-    CreateGrid();
-
-    foreach (var antPosition in antCommunication.AntPositions) {
-      ant ant = antScene.Instantiate<ant>();
-      ant.gridPosition = antPosition;
-      ant.GlobalPosition = antPosition * cellSize;
+    env = root.GetNode<Environment>("GlobalEnvironment");
+    env.InitializeGame(antCount, foodCount);
+    foreach (var item in env.AntPositons) {
+      var ant = antScene.Instantiate<Ant>();
+      ant.gridPosition = item;
       AddChild(ant);
     }
   }
 
-  public override void _Draw() {
-    foreach (var foodPosition in foodPositions) {
-      DrawCircle(foodPosition * cellSize, 6f, Colors.DarkRed);
+  public override void _UnhandledInput(InputEvent @event) {
+    if (@event.IsActionPressed("MoveAnt", true)) {
+      for (int i = GetChildCount() - 1; i >= 0; i--) {
+        var ant = GetChild<Ant>(i);
+        ant.Move();
+        if (ant.saturation <= 0) {
+          ant.QueueFree();
+        }
+      }
+      env.SpawnFood();
+      QueueRedraw();
     }
   }
 
-  public void CreateGrid() {
-    var rng = new RandomNumberGenerator();
-
-    antCommunication.AntPositions.UnionWith(getRandPositions(antCount, rng));
-    foodPositions.UnionWith(getRandPositions(foodCount, rng));
-  }
-
-  public void SpawnFood(int count) {
-    var rng = new RandomNumberGenerator();
-
-    foodPositions.UnionWith(getRandPositions(count, rng));
-  }
-
-  private HashSet<Vector2I> getRandPositions(int count, RandomNumberGenerator rng) {
-    var positions = new HashSet<Vector2I>();
-    var occupiedPositions = antCommunication.AntPositions.Count + foodPositions.Count;
-      if (count >= gridSize.X * gridSize.Y - occupiedPositions) {
-        return positions;
-      }
-
-      while (positions.Count < count) {
-        int x = (int)(rng.Randi() % gridSize.X);
-        int y = (int)(rng.Randi() % gridSize.Y);
-        var pos = new Vector2I(x, y);
-
-        if (antCommunication.AntPositions.Contains(pos) || foodPositions.Contains(pos)) {
-          continue;
-        }
-
-        positions.Add(new Vector2I(x, y));
-      }
-    return positions;
+  public override void _Draw()
+  {
+    foreach (var item in env.FoodPositions) {
+      DrawCircle(item * env.cellSize, 7f, Colors.DarkRed);
+    }
   }
 }

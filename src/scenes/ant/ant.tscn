@@ -1,7 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://bb4l0quomhjx7"]
+[gd_scene load_steps=6 format=3 uid="uid://blsgmcf8dm16k"]
 
 [ext_resource type="Texture2D" uid="uid://b1eaxdusrsaao" path="res://src/images/antenemy_grey_spritesheet.png" id="1_u8uo2"]
-[ext_resource type="Script" path="res://src/scenes/ant/ant.cs" id="2_ko8ab"]
+[ext_resource type="Script" path="res://src/scenes/ant/Ant.cs" id="2_xx8sw"]
 
 [sub_resource type="Animation" id="Animation_0yak6"]
 resource_name = "Ant"
@@ -44,7 +44,7 @@ _data = {
 [node name="Ant" type="Sprite2D"]
 texture = ExtResource("1_u8uo2")
 vframes = 2
-script = ExtResource("2_ko8ab")
+script = ExtResource("2_xx8sw")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 autoplay = "Ant"
