@@ -12,6 +12,7 @@ public partial class grid : Node2D {
     var root = GetTree().Root;
     env = root.GetNode<Environment>("GlobalEnvironment");
     env.InitializeGame();
+    antScene = ResourceLoader.Load("res://src/scenes/ant/ant.tscn") as PackedScene;
     foreach (var item in env.AntPositons) {
       var ant = antScene.Instantiate<Ant>();
       ant.gridPosition = item;
@@ -20,7 +21,7 @@ public partial class grid : Node2D {
   }
 
   public override void _UnhandledInput(InputEvent @event) {
-    if (@event.IsActionPressed("MoveAnt", true)) {
+    if (@event.IsActionPressed("MoveAnt", true) && env.AntPositons.Count > 0) {
       for (int i = GetChildCount() - 1; i >= 0; i--) {
         var ant = GetChild<Ant>(i);
         ant.Move();

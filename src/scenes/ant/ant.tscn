@@ -1,7 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://blsgmcf8dm16k"]
+[gd_scene load_steps=9 format=3 uid="uid://blsgmcf8dm16k"]
 
 [ext_resource type="Texture2D" uid="uid://b1eaxdusrsaao" path="res://src/images/antenemy_grey_spritesheet.png" id="1_u8uo2"]
 [ext_resource type="Script" path="res://src/scenes/ant/Ant.cs" id="2_xx8sw"]
+[ext_resource type="PackedScene" uid="uid://ciwnwyqkikgcs" path="res://src/scenes/ui/stat_container.tscn" id="3_g3ed4"]
+[ext_resource type="Script" path="res://src/scenes/ui/GridPositionStat.cs" id="4_f8o5k"]
+[ext_resource type="Script" path="res://src/scenes/ui/SaturationContainer.cs" id="5_yu554"]
 
 [sub_resource type="Animation" id="Animation_0yak6"]
 resource_name = "Ant"
@@ -51,3 +54,25 @@ autoplay = "Ant"
 libraries = {
 "": SubResource("AnimationLibrary_v2ggo")
 }
+
+[node name="ControlLayer" type="CanvasLayer" parent="."]
+
+[node name="AntStats" type="VBoxContainer" parent="ControlLayer"]
+offset_left = 77.0
+offset_top = 75.0
+offset_right = 248.0
+offset_bottom = 131.0
+metadata/_edit_group_ = true
+
+[node name="SaturationStat" parent="ControlLayer/AntStats" instance=ExtResource("3_g3ed4")]
+layout_mode = 2
+script = ExtResource("5_yu554")
+statName = "Saturation"
+
+[node name="GridPositionStat" parent="ControlLayer/AntStats" instance=ExtResource("3_g3ed4")]
+layout_mode = 2
+script = ExtResource("4_f8o5k")
+statName = "Grid Position"
+
+[connection signal="GridPosiitonChanged" from="." to="ControlLayer/AntStats/GridPositionStat" method="OnAnrGridPositionChanged"]
+[connection signal="SaturationChanged" from="." to="ControlLayer/AntStats/SaturationStat" method="OnAntSaturationChanged"]

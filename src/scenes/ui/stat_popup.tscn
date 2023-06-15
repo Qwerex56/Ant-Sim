@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://c341jh0478nwn"]
+
+[ext_resource type="PackedScene" uid="uid://ciwnwyqkikgcs" path="res://src/scenes/ui/stat_container.tscn" id="1_cgtrq"]
+
+[node name="StatPopup" type="MenuButton"]
+offset_right = 111.0
+offset_bottom = 94.0
+
+[node name="StatContainer" parent="." instance=ExtResource("1_cgtrq")]
+layout_mode = 0

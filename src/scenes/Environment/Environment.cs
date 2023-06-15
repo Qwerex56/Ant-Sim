@@ -19,6 +19,7 @@ public partial class Environment : Node {
 
   // Modifiedable fields in editor
   [Export] private ScrollContainer settingsTab;
+  [Export] private PackedScene gridScene;
   [Export] private int foodSpawnRate = 3;
 
   [Export] private int initialFood = 5;
@@ -36,6 +37,20 @@ public partial class Environment : Node {
   public override void _Input(InputEvent @event) {
     if (@event.IsActionPressed("OpenSettingMenu")) {
       OpenSettings();
+    }
+    if (@event.IsActionPressed("ResetGame")) {
+      var gridNode = GetTree().Root.GetNode<Node2D>("Main").GetChild<grid>(0);
+
+      antPositons = new();
+      foodPositions = new();
+
+      if (gridNode != null) {
+        gridNode.QueueFree();
+      }
+
+      var game = gridScene.Instantiate<grid>();
+      game.Name = "Grid";
+      GetTree().Root.GetNode<Node2D>("Main").AddChild(game);
     }
   }
 

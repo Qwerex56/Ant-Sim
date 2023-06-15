@@ -1,12 +1,14 @@
-[gd_scene load_steps=3 format=3 uid="uid://bg4tkk0egrk4n"]
+[gd_scene load_steps=4 format=3 uid="uid://bg4tkk0egrk4n"]
 
 [ext_resource type="Script" path="res://src/scenes/Environment/Environment.cs" id="1_doegm"]
 [ext_resource type="PackedScene" uid="uid://bmqu4foydjxdj" path="res://src/scenes/ui/labeled_spinbox.tscn" id="2_4ielu"]
+[ext_resource type="PackedScene" uid="uid://bl1cmsithndgf" path="res://src/scenes/grid/grid.tscn" id="2_wrnqp"]
 
 [node name="Environment" type="Node" node_paths=PackedStringArray("settingsTab")]
 editor_description = "Holds information about all food positions, ants positions and takes care for grid initialization"
 script = ExtResource("1_doegm")
 settingsTab = NodePath("EnvSettings/Settings")
+gridScene = ExtResource("2_wrnqp")
 
 [node name="EnvSettings" type="CanvasLayer" parent="."]
 
@@ -26,31 +28,42 @@ size_flags_horizontal = 3
 [node name="InitialFoodSetting" parent="EnvSettings/Settings/SettingsScroll" instance=ExtResource("2_4ielu")]
 layout_mode = 2
 settingName = "Initial Food"
+minValue = 1
 Value = 5
 
 [node name="InitialAntsSetting" parent="EnvSettings/Settings/SettingsScroll" instance=ExtResource("2_4ielu")]
 layout_mode = 2
 settingName = "Initial Ants"
+maxValue = 25
+minValue = 1
 Value = 3
 
 [node name="SaturationMaxSetting" parent="EnvSettings/Settings/SettingsScroll" instance=ExtResource("2_4ielu")]
 layout_mode = 2
 settingName = "Max Saturation"
+maxValue = 100
+minValue = 5
 Value = 15
 
 [node name="SaturationLostSetting" parent="EnvSettings/Settings/SettingsScroll" instance=ExtResource("2_4ielu")]
 layout_mode = 2
 settingName = "Saturatio lost rate"
+maxValue = 50
+minValue = 1
 Value = 1
 
 [node name="SaturationRegainSetting" parent="EnvSettings/Settings/SettingsScroll" instance=ExtResource("2_4ielu")]
 layout_mode = 2
 settingName = "Saturation gain rate"
+maxValue = 50
+minValue = 1
 Value = 2
 
 [node name="FoodSpawnRateSetting" parent="EnvSettings/Settings/SettingsScroll" instance=ExtResource("2_4ielu")]
 layout_mode = 2
 settingName = "Food spawn rate"
+maxValue = 20
+minValue = 1
 Value = 3
 
 [connection signal="valueChanged" from="EnvSettings/Settings/SettingsScroll/InitialFoodSetting" to="." method="OnInitialFoodValueChanged"]

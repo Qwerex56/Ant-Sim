@@ -4,21 +4,38 @@ using System.Linq;
 using System.Collections.Generic;
 
 public partial class Ant : Sprite2D {
+  [Signal] public delegate void SaturationChangedEventHandler(int value);
+  [Signal] public delegate void GridPosiitonChangedEventHandler(Vector2I value);
+
+
   static readonly AntCommunicationComponent antCommunication = new AntCommunicationComponent();
   private Environment env;
 
-  public Vector2I gridPosition { get; set; }
-  
-  private Queue<Vector2I> stepHistory = new();
 
+  public Vector2I gridPosition { get; set; }
   public int saturation;
 
   public override void _Ready() {
     var root = GetTree().Root;
     env = root.GetNode<Environment>("GlobalEnvironment");
 
-    GlobalPosition = gridPosition * env.CELL_SIZE;
+    GlobalPosition = gridPosition * env.CELL_SIZE + Vector2I.One * (env.CELL_SIZE / 2);
     saturation = env.saturationMax;
+
+    EmitSignal(nameof(GridPosiitonChanged), gridPosition);
+    EmitSignal(nameof(SaturationChanged), saturation);
+  }
+
+  public override void _Process(double delta) {
+    var mousePosition = GetLocalMousePosition();
+    var stats = GetNode<VBoxContainer>("ControlLayer/AntStats");
+
+    if (mousePosition.X >= -8 && mousePosition.X <= 8
+        && mousePosition.Y >= -8 && mousePosition.Y <= 8) {
+      stats.Visible = true;
+    } else {
+      stats.Visible = false;
+    }
   }
 
   public void Move() {
@@ -48,7 +65,7 @@ public partial class Ant : Sprite2D {
     var foodIntersection = ListIntersection(neighborCells, env.FoodPositions);
     var antIntersection = ListIntersection(neighborCells, env.AntPositons);
 
-    if (foodIntersection.Count <= 0 || saturation >= env.saturationMax / 10 * 9) {
+    if (foodIntersection.Count <= 0 /* || saturation >= env.saturationMax / 10 * 9 */) {
       // Remove occupied cells from neighborCells list
       foreach (var item in antIntersection) {
         neighborCells.Remove(item);
@@ -83,12 +100,15 @@ public partial class Ant : Sprite2D {
     env.AntPositons.Add(gridPosition);
 
     GlobalPosition = gridPosition * env.CELL_SIZE + Vector2I.One * (env.CELL_SIZE / 2);
+
+    EmitSignal(nameof(SaturationChanged), saturation);
+    EmitSignal(nameof(GridPosiitonChanged), gridPosition);
   }
 
   private List<Vector2I> GetAdjecentCells() {
     var adjecentCells = new List<Vector2I>();
 
-    for (int x = 0, y = -1; x < 9; x++) {
+    for (int x = 0, y = -1; y < 2; x++) {
       var xmod = (x % 3) - 1;
       adjecentCells.Add(new Vector2I(gridPosition.X + xmod, gridPosition.Y + y));
 

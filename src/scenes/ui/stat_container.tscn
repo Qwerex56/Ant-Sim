@@ -1,0 +1,24 @@
+[gd_scene load_steps=2 format=3 uid="uid://ciwnwyqkikgcs"]
+
+[ext_resource type="Script" path="res://src/scenes/ui/StatContainer.cs" id="1_ofje8"]
+
+[node name="StatContainer" type="HBoxContainer"]
+offset_right = 171.0
+offset_bottom = 26.0
+theme_override_constants/separation = 20
+script = ExtResource("1_ofje8")
+
+[node name="StatNameLabel" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 5
+text = "StatName"
+vertical_alignment = 1
+
+[node name="StatValueLabel" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 5
+text = "StatValue"
+horizontal_alignment = 2
+vertical_alignment = 1
